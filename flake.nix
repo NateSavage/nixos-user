@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
+    nixpkgs.follows = "nixos-cosmic/nixpkgs";
   };
 
   outputs = { self, nixpkgs-unstable, nixos-cosmic, ... }: let
