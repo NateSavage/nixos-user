@@ -3,9 +3,10 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
   };
 
-  outputs = { self, nixpkgs-unstable, ... }: let
+  outputs = { self, nixpkgs-unstable, nixos-cosmic, ... }: let
     # Overlay that exposes pkgs.unstable for use in any module
     unstableOverlay = final: prev: {
       unstable = import nixpkgs-unstable {
@@ -21,6 +22,7 @@
     nixosModules = {
       nate-desktop = { imports = [
         { nixpkgs.overlays = [ unstableOverlay ]; }
+        nixos-cosmic.nixosModules.default
         ./users/nates/desktop.nix
       ]; };
       nate-server = { imports = [

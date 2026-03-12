@@ -21,6 +21,8 @@
   ) (listFilesRelative dotfilesDir);
 in {
 
+  imports = [ ../../modules/yubikey.nix ];
+
   options.users.nates = {
     wheel = lib.mkOption {
       type = lib.types.bool;
@@ -55,6 +57,7 @@ in {
     };
 
     yubikey = {
+      enable = true;
       identifiers = {
         a = 31114443;
         c = 27429156;
