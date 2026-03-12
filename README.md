@@ -1,6 +1,6 @@
 # nixos-user
 
-A NixOS flake that defines my user account for any machine. Importing this onto a nixos machine gives me everything I need to be able to operate. This is designed to be as simple as it possibly can be so I can setup machines easily, at 3am, drunk. It is not quantum secure, you could brute force my local password on even a normal supercomputer. So if you copy this as a template for yourself, it is **extremely important you disable remote password login**. Which this flake will do it by default if you haven't explicitly enabled it elsewhere in your configuration.
+A NixOS flake that defines my user account for any machine. Importing this onto a nixos machine gives me everything I need to be able to operate. This is designed to be as simple as it possibly can be so I can setup machines easily, at 3am, drunk. It is not quantum secure, you could brute force my local password on even a normal supercomputer. So if you copy this as a template for yourself, it is ***extremely important you disable remote password login***. Which this flake will do it by default if you haven't explicitly enabled it elsewhere in your configuration.
 
 ## Usage
 
