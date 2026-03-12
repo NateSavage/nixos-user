@@ -6,7 +6,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
   };
 
-  outputs = { self, nixpkgs-unstable, nixos-cosmic, ... }: let
+  outputs = { self, nixpkgs-unstable, ... }: let
     # Overlay that exposes pkgs.unstable for use in any module
     unstableOverlay = final: prev: {
       unstable = import nixpkgs-unstable {
