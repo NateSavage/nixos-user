@@ -1,6 +1,5 @@
 { lib, config, ... }: let
   cfg = config.users.nates;
-  public-keys = lib.filesystem.listFilesRecursive ./keys;
   ifGroupsExist = groups: builtins.filter (group: builtins.hasAttr group config.users.groups) groups;
 
   dotfilesDir = ../../dotfiles;
@@ -53,7 +52,7 @@ in {
       );
 
       # Placed into /etc/ssh/authorized_keys.d/nates on NixOS
-      openssh.authorizedKeys.keys = lib.lists.forEach public-keys (key: builtins.readFile key);
+      openssh.authorizedKeys.keyFiles = lib.filesystem.listFilesRecursive ./keys;
     };
 
     yubikey = {
