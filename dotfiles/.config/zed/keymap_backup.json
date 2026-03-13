@@ -1,0 +1,77 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "bindings": {
+      "alt-j": "menu::SelectNext",
+      "alt-k": "menu::SelectPrevious",
+    },
+  },
+  {
+    "context": "Pane",
+    "bindings": {
+      "alt-l": "pane::ActivateNextItem",
+      "alt-h": "pane::ActivatePrevItem",
+    },
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "alt-k": "terminal::ScrollLineUp",
+      "alt-j": "terminal::ScrollLineDown",
+    },
+  },
+  {
+    "context": "VimControl && !menu",
+    "bindings": {
+      "alt-j": "vim::ScrollDown",
+      "alt-k": "vim::ScrollUp",
+      "f f": "file_finder::Toggle", // find file
+      "f p": "projects::OpenRecent", // find project
+    },
+  },
+  {
+    "context": "Editor && showing_completions",
+    "bindings": {
+      "alt-j": "editor::ContextMenuNext",
+      "alt-k": "editor::ContextMenuPrevious",
+    },
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "ctrl-alt-j": "editor::AddSelectionBelow",
+      "ctrl-alt-k": "editor::AddSelectionAbove",
+    },
+  },
+  {
+    "context": "vim_mode == insert",
+    "bindings": {
+      "shift-space": ["workspace::SendKeystrokes", "_"],
+      // editor: signature help next
+    },
+  },
+  {
+    "context": "vim_mode == visual",
+    "bindings": {
+      "shift-j": "editor::MoveLineDown",
+      "shift-k": "editor::MoveLineUp",
+      "shift-h": "editor::Outdent",
+      "shift-l": "editor::Indent",
+    },
+  },
+  {
+    "context": "Debugger",
+    "bindings": {
+      "ctrl-j": "debugger::StepOver",
+      "ctrl-k": "debugger::StepBack",
+      "ctrl-h": "debugger::StepOut",
+      "ctrl-l": "debugger::StepInto",
+    },
+  },
+]

@@ -1,0 +1,170 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "ssh_connections": [
+    {
+      "host": "nox.lan",
+      "username": "nate",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/home/nate"
+          ]
+        },
+        {
+          "paths": [
+            "/home/nate/infra"
+          ]
+        },
+        {
+          "paths": [
+            "/mnt/arc/public/infra"
+          ]
+        }
+      ]
+    }
+  ],
+  "outline_panel": {
+    "dock": "right",
+  },
+  "agent_servers": {
+    "your_agent": {
+      "type": "custom",
+      "command": "path_to_executable",
+    },
+    "claude": {
+      "default_model": "sonnet",
+      "favorite_models": [],
+      "default_config_options": {},
+      "favorite_config_option_values": {},
+    },
+  },
+  "toolbar": {
+    "code_actions": true,
+    "agent_review": true,
+  },
+  "inline_code_actions": true,
+  "gutter": {
+    "min_line_number_digits": 1,
+  },
+  "auto_signature_help": true,
+  "scroll_beyond_last_line": "vertical_scroll_margin",
+  "project_panel": {
+    "dock": "left",
+  },
+  "active_pane_modifiers": {
+    "border_size": 0.0,
+  },
+  "preview_tabs": {
+    "enable_preview_from_file_finder": true,
+  },
+  "tab_bar": {
+    "show_nav_history_buttons": true,
+    "show": true,
+  },
+  "title_bar": {
+    "show_sign_in": false,
+    "show_user_picture": true,
+    "show_onboarding_banner": false,
+    "show_project_items": true,
+    "show_branch_name": true,
+  },
+  "debugger": {
+    "dock": "bottom",
+    "button": false,
+  },
+  "search": {
+    "button": false,
+  },
+  "diagnostics": {
+    "button": false,
+  },
+  "terminal": {
+    "toolbar": {
+      "breadcrumbs": false,
+    },
+    //"shell": {
+    //  "with_arguments": {
+    //    "title_override": "Cmder",
+    //    "program": "cmd.exe /k \"C:/Program Files/cmder/vendor/init.bat \"",
+    //    "args": [],
+    //  },
+    //},
+    "font_size": 14.0,
+    "button": false,
+  },
+  "status_bar": {
+    "cursor_position_button": true,
+    "active_language_button": true,
+  },
+  "buffer_line_height": "standard",
+  "ui_font_family": ".ZedSans",
+  "buffer_font_family": "0xProto Nerd Font Mono",
+  "base_keymap": "JetBrains",
+  "agent": {
+    "use_modifier_to_send": true,
+    "default_profile": "write",
+    "default_model": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-6-latest",
+    },
+  },
+  "vim_mode": true,
+  "ui_font_size": 16.0,
+  "buffer_font_size": 15.0,
+  "preferred_line_length": 120,
+  "wrap_guides": [121],
+  "theme": {
+    "mode": "system",
+    "light": "One Light",
+    "dark": "VSCode Dark Polished",
+  },
+  "tabs": {
+    "git_status": false, // Color to show git status
+    "close_position": "right", // Close button position (left, right, hidden)
+    "show_close_button": "hover", // Close button shown (hover, always, hidden)
+    "file_icons": true, // Icon showing file type
+    // Show diagnostics in file icon (off, errors, all). Requires file_icons=true
+    "show_diagnostics": "all",
+  },
+  "languages": {
+    "CSharp": {
+      "format_on_save": "off",
+      "formatter": "language_server",
+    },
+    "GDScript": {
+      "hard_tabs": true,
+      "tab_size": 4,
+    },
+  },
+  "language_models": {
+    "openai_compatible": {
+      "BeepBox": {
+        "api_url": "http://BeepBox:1234/v1",
+        "available_models": [
+          {
+            "name": "mistralai/devstral-small-2507",
+            "display_name": "devstral-small-2507",
+            "max_tokens": 131072,
+            "max_output_tokens": 32000,
+            "max_completion_tokens": 200000,
+          },
+          {
+            "name": "qwen/qwen3-coder-30b",
+            "display_name": "qwen3-coder-30b",
+            "max_tokens": 131072,
+            "max_output_tokens": 32000,
+            "max_completion_tokens": 200000,
+          },
+        ],
+      },
+    },
+  },
+}

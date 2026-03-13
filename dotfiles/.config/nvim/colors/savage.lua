@@ -1,0 +1,1 @@
+require("theme-savage").setup()

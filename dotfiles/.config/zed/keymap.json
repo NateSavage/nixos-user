@@ -1,0 +1,177 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+//
+// you can use the command `dev:open key context view` to see info about the current context
+[
+  //--- Copy/Paste Override (works in all vim modes) ---//
+  {
+    "context": "Editor",
+    "bindings": {
+      "ctrl-c": "editor::Copy",
+      "ctrl-v": "editor::Paste",
+    },
+  },
+  //--- Global Bindings ---//
+  {
+    "context": "menu",
+    "bindings": {
+      "alt-j": "menu::SelectNext", // selecting things in menus with alt
+      "alt-k": "menu::SelectPrevious",
+    },
+  },
+  {
+    "context": "VimControl && !menu && !AcpThread",
+    "bindings": {
+      "alt-j": "vim::ScrollDown",
+      "alt-k": "vim::ScrollUp",
+
+      "f w": "pane::DeploySearch", // find word
+      "f f": "file_finder::Toggle", // find file
+      "f p": "projects::OpenRecent", // find project
+      "f r": "editor::FindAllReferences", // use LSP to find references to the symbol under the cursor
+
+      "r n": "editor::Rename", // rename symbol, only works when a language server is available
+      "g b": "git::Blame", // git-blame
+    },
+  },
+  //--- text editing ---//
+  {
+    "context": "Editor && !(vim_mode == insert)",
+    "bindings": {
+      "t c": "pane::CloseActiveItem", // tab-close
+      "t f": "pane::CloseOtherItems", // tab-focus
+    },
+  },
+  {
+    "context": "vim_mode == insert",
+    "bindings": {
+      "shift-space": ["workspace::SendKeystrokes", "_"],
+      // editor: signature help next
+    },
+  },
+  {
+    "context": "vim_mode == visual",
+    "bindings": {
+      // shift selected text around
+      "shift-j": "editor::MoveLineDown",
+      "shift-k": "editor::MoveLineUp",
+      "shift-h": "editor::Outdent",
+      "shift-l": "editor::Indent",
+    },
+  },
+  //--- Any Pane ---//
+  {
+    "context": "Pane",
+    "bindings": {
+      // move between tabs
+      "alt-l": "pane::ActivateNextItem",
+      "alt-h": "pane::ActivatePreviousItem",
+
+      // move between panels
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-j": "workspace::ActivatePaneDown",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-alt-h": "workspace::ActivatePaneLeft",
+      "ctrl-alt-j": "workspace::ActivatePaneDown",
+      "ctrl-alt-k": "workspace::ActivatePaneRight",
+      "ctrl-alt-l": "workspace::ActivatePaneUp",
+    },
+  },
+  //--- Command Palette (Is not a pane or menu) ---//
+  {
+    "context": "CommandPalette",
+    "bindings": {
+      "alt-j": "pane::ActivateNextItem", // selecting things in menus with alt
+      "alt-k": "pane::ActivatePreviousItem",
+    },
+  },
+  //--- Main Text Editing Pane ---//
+  {
+    "context": "Pane > Editor",
+    "bindings": {
+      // multiline cursor
+      "ctrl-alt-j": "editor::AddSelectionBelow",
+      "ctrl-alt-k": "editor::AddSelectionAbove",
+
+      // switch panels
+      "ctrl-j": "terminal_panel::Toggle",
+      "ctrl-h": "project_panel::ToggleFocus",
+      "ctrl-l": "workspace::ActivatePaneRight",
+    },
+  },
+  {
+    "context": "Editor && showing_completions",
+    "bindings": {
+      "alt-j": "editor::ContextMenuNext",
+      "alt-k": "editor::ContextMenuPrevious",
+    },
+  },
+
+  //--- File Tree Panel ---//
+  {
+    "context": "ProjectPanel && not_editing",
+    "bindings": {
+      "q": "workspace::CloseActiveDock",
+      "ctrl-l": "workspace::CloseActiveDock",
+    },
+  },
+  //--- Terminal ---//
+  {
+    "context": "Terminal",
+    "bindings": {
+      "escape": "terminal::ToggleViMode",
+
+      "alt-k": "terminal::ScrollLineUp",
+      "alt-j": "terminal::ScrollLineDown",
+
+      // switch tabs
+      "alt-l": "pane::ActivateNextItem",
+      "alt-h": "pane::ActivatePreviousItem",
+
+      // change pane focus overrides
+      "ctrl-h": "project_panel::ToggleFocus",
+      "ctrl-k": "terminal_panel::Toggle",
+      "ctrl-j": null,
+    },
+  },
+  {
+    // this doesn't work because in vi mode the terminal stops processing hotkeys
+    "context": "Terminal && vi_mode == normal",
+    "bindings": {
+      "shift-;": "command_palette::Toggle",
+      "q": "workspace::CloseActiveDock",
+    },
+  },
+  //-- Agent Panel ---//
+  {
+    "context": "AgentPanel > AcpThread",
+    "bindings": {
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-j": null,
+    },
+  },
+  //--- Debugger ---//
+  {
+    "context": "Debugger",
+    "bindings": {
+      "ctrl-j": "debugger::StepOver",
+      "ctrl-k": "debugger::StepBack",
+      "ctrl-h": "debugger::StepOut",
+      "ctrl-l": "debugger::StepInto",
+    },
+  },
+
+  // q as universal back button when not entering text
+  {
+    "context": "VimControl && !menu && !Editor",
+    "bindings": {
+      "q": "pane::CloseActiveItem",
+    },
+  },
+]
