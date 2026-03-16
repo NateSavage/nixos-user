@@ -10,7 +10,7 @@
     # Overlay that exposes pkgs.unstable for use in any module
     unstableOverlay = final: prev: {
       unstable = import nixpkgs-unstable {
-        inherit (prev) system;
+        system = prev.stdenv.hostPlatform.system;
         config.allowUnfree = true;
       };
     };

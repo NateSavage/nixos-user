@@ -28,6 +28,11 @@ in {
       default = true;
       description = "Grant nates sudo (wheel) access.";
     };
+    openssh = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable the OpenSSH daemon and restrict it to nates.";
+    };
   };
 
   config = {
@@ -63,10 +68,14 @@ in {
       };
     };
 
-    services.openssh.settings.AllowUsers = [ "nates" ];
-    # Disable password auth by default. Machine flakes can override with
-    # services.openssh.settings.PasswordAuthentication = true;
-    services.openssh.settings.PasswordAuthentication = lib.mkDefault false;
+    services.openssh = lib.mkIf cfg.openssh {
+      enable = true;
+      settings = {
+        AllowUsers = [ "nates" ];
+        # Override with services.openssh.settings.PasswordAuthentication = true;
+        PasswordAuthentication = lib.mkDefault false;
+      };
+    };
 
     systemd.tmpfiles.rules = dotfileRules ++ [
       "d /home/nates/.ssh/sockets 0700 nates users -"
