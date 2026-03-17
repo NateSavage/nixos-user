@@ -1,5 +1,9 @@
 { pkgs, ... }: {
-  imports = [ ./default.nix ];
+  imports = [
+    ./default.nix
+    ./software/cli
+    ./software/gui
+  ];
 
   # COSMIC desktop environment
   services.desktopManager.cosmic.enable = true;
@@ -10,6 +14,7 @@
   };
 
   yubikey.lockOnRemove = true;
+  users.nates.openssh = true;
 
   # AppImage support
   environment.systemPackages = [ pkgs.appimage-run ];
@@ -34,46 +39,4 @@
   programs.nh.enable = true;
   programs.git.enable = true;
 
-  users.users.nates.packages = with pkgs; [
-    # editors
-    unstable.neovim
-    unstable.zed-editor
-    nixd            # nix language server
-    micro
-
-    # browsers
-    unstable.firefox
-
-    # nix tools
-    nix-inspect
-    deadnix
-
-    # key management
-    age
-    ssh-to-age
-
-    # dev
-    just
-    git
-    git-lfs
-    unstable.godot_4
-    unstable.godot_4-export-templates-bin
-
-    # desktop tools
-    mission-center
-    fsearch
-    bleachbit
-    yubioath-flutter
-
-    # productivity
-    onlyoffice-desktopeditors
-    obsidian
-
-    # creative
-    unstable.blender
-
-    # misc
-    github-desktop
-    unstable.proton-pass
-  ];
 }
