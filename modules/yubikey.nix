@@ -65,9 +65,7 @@ in {
       yubikey-down
     ];
 
-    services.pcscd.enable = true;
     services.udev.packages = [ pkgs.yubikey-personalization ];
-    services.yubikey-agent.enable = true;
 
     services.udev.extraRules = ''
       # Link ~/.ssh/id_yubikey to the plugged-in key

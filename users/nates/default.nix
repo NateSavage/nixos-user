@@ -44,6 +44,7 @@ in {
         lib.optional cfg.wheel "wheel"
         ++ [
           "home"
+          "the-claw"
 
           "synced"
           "panopticom"
