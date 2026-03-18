@@ -4,5 +4,6 @@
     git-lfs
     just
     github-desktop
+    unstable.ghostty
   ];
 }
