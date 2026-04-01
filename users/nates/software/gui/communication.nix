@@ -1,9 +1,5 @@
 { pkgs, ... }: {
   users.users.nates.packages = with pkgs; [
-    dotnet-sdk_9
-    dotnet-script
-    git
-    git-lfs
-    just
+    unstable.discord
   ];
 }
