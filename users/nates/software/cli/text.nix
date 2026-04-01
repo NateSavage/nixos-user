@@ -1,6 +1,6 @@
 { pkgs, ... }: {
   users.users.nates.packages = with pkgs; [
-    micro
+    stable.micro
     unstable.neovim
   ];
 }
