@@ -1,7 +1,6 @@
 { pkgs, ... }: {
   users.users.nates.packages = with pkgs; [
-    dotnet-sdk_9
-    dotnet-script
+    dotnetCorePackages.sdk_9_0_1xx
     git
     git-lfs
     just
