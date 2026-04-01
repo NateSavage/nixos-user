@@ -20,7 +20,10 @@
   ) (listFilesRelative dotfilesDir);
 in {
 
-  imports = [ ../../modules/yubikey.nix ];
+  imports = [
+    ../../modules/yubikey.nix
+    ../../modules/smb-mounts.nix
+  ];
 
   options.users.nates = {
     wheel = lib.mkOption {
@@ -59,6 +62,15 @@ in {
 
       # Placed into /etc/ssh/authorized_keys.d/nates on NixOS
       openssh.authorizedKeys.keyFiles = lib.filesystem.listFilesRecursive ./keys;
+    };
+
+    smb-mounts = {
+      enable = true;
+      mounts = map (share: {
+        device = "//nox.lan/${share}";
+        mountPoint = "/mnt/nox/${share}";
+        credentialsFile = "/etc/smb-credentials-nox";
+      }) [ "public" "archive" "eromancer" "panopticom" ];
     };
 
     yubikey = {
