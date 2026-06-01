@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, ... }: let
@@ -23,14 +23,14 @@
   in {
 
     # NixOS modules for importing into machine flakes.
-    # Usage: imports = [ inputs.nixos-user.nixosModules.nate-desktop ];
+    # Usage: imports = [ inputs.user-nates.nixosModules.desktop ];
     # pkgs.<name> resolves to unstable. Use pkgs.stable.<name> to pin to stable.
     nixosModules = {
-      nate-desktop = { imports = [
+      desktop = { imports = [
         { nixpkgs.overlays = [ stableOverlay unstableOverlay ]; }
         ./users/nates/desktop.nix
       ]; };
-      nate-server = { imports = [
+      server = { imports = [
         { nixpkgs.overlays = [ stableOverlay unstableOverlay ]; }
         ./users/nates/server.nix
       ]; };
