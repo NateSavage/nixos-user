@@ -7,7 +7,7 @@ A NixOS flake that defines my user account for any NixOS machine. This is design
 Add this flake as an input in your machine flake:
 
 ```nix
-inputs.nates = {
+inputs.user-nates = {
   url = "github:NateSavages/nixos-user";  # or path:/path/to/nixos-user
   inputs.nixpkgs.follows = "YOUR_NIXPKGS_VERSION";  # optional: pin nates stable software to the hosts stable package versions
 };
@@ -17,10 +17,10 @@ Then import the appropriate module for the machine type:
 
 ```nix
 # Desktop / laptop
-imports = [ inputs.nixos-user.nixosModules.desktop ];
+imports = [ inputs.user-nates.nixosModules.desktop ];
 
 # Server / headless
-imports = [ inputs.nixos-user.nixosModules.server ];
+imports = [ inputs.user-nates.nixosModules.server ];
 ```
 
 ## Options
@@ -31,7 +31,7 @@ imports = [ inputs.nixos-user.nixosModules.server ];
 
 Example — disable sudo on a server:
 ```nix
-imports = [ inputs.nixos-user.nixosModules.nate-server ];
+imports = [ inputs.user-nates.nixosModules.server ];
 users.nates.wheel = false;
 ```
 
