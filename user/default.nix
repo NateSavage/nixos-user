@@ -14,6 +14,21 @@
       else []
     ) entries);
 
+  # Recursively list directories relative to a directory
+  listDirsRelative = dir:
+    let
+      entries = builtins.readDir dir;
+    in lib.lists.flatten (lib.attrsets.mapAttrsToList (name: type:
+      if type == "directory" then
+        [ name ] ++ map (f: "${name}/${f}") (listDirsRelative "${dir}/${name}")
+      else []
+    ) entries);
+
+  # d rules ensure parent dirs exist before L rules create symlinks
+  dotfileDirRules = map (relDir:
+    "d /home/nates/${relDir} - nates users -"
+  ) (listDirsRelative dotfilesDir);
+
   # One tmpfiles symlink rule per dotfile
   dotfileRules = map (relPath:
     "L /home/nates/${relPath} - - - - ${dotfilesDir}/${relPath}"
@@ -90,7 +105,7 @@ in {
       };
     };
 
-    systemd.tmpfiles.rules = dotfileRules ++ [
+    systemd.tmpfiles.rules = dotfileDirRules ++ dotfileRules ++ [
       "d /home/nates/.ssh/sockets 0700 nates users -"
     ];
   };
