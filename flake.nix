@@ -29,14 +29,12 @@
       desktop = {
         imports = [
           { nixpkgs.overlays = [ stableOverlay unstableOverlay ]; }
-          { _module.args.flakeLib = flakeLib; }
           ./user/desktop.nix
         ];
       };
       server = {
         imports = [
           { nixpkgs.overlays = [ stableOverlay unstableOverlay ]; }
-          { _module.args.flakeLib = flakeLib; }
           ./user/server.nix
         ];
       };

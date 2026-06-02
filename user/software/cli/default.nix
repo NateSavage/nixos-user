@@ -1,3 +1,3 @@
-{ flakeLib, ... }: {
-  imports = flakeLib.importDir ./.;
+{ lib, ... }: {
+  imports = (import ../../../lib { inherit lib; }).importDir ./.;
 }
