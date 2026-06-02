@@ -105,6 +105,11 @@ in {
       };
     };
 
+    programs.ssh.knownHosts = {
+      "github.com".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C5skZbW7YNcuG/F3";
+      "gitlab.com".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf";
+    };
+
     systemd.tmpfiles.rules = dotfileDirRules ++ dotfileRules ++ [
       "d /home/nates/.ssh/sockets 0700 nates users -"
     ];
