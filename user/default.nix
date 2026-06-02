@@ -2,7 +2,7 @@
   cfg = config.users.nates;
   ifGroupsExist = groups: builtins.filter (group: builtins.hasAttr group config.users.groups) groups;
 
-  dotfilesDir = ../../dotfiles;
+  dotfilesDir = ../dotfiles;
 
   # Recursively list files relative to a directory
   listFilesRelative = dir:
@@ -21,8 +21,8 @@
 in {
 
   imports = [
-    ../../modules/yubikey.nix
-    ../../modules/smb-mounts.nix
+    ../modules/yubikey.nix
+    ../modules/smb-mounts.nix
   ];
 
   options.users.nates = {
