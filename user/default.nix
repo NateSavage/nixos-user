@@ -90,6 +90,7 @@ in {
 
     yubikey = {
       enable = true;
+      user = "nates";
       identifiers = {
         a = 31114443;
         c = 27429156;
@@ -113,6 +114,8 @@ in {
 
     systemd.tmpfiles.rules = dotfileDirRules ++ dotfileRules ++ [
       "d /home/nates/.ssh/sockets 0700 nates users -"
+      "L /home/nates/.ssh/a-ed25519-sk.pub - nates users - ${./keys/a-ed25519-sk.pub}"
+      "L /home/nates/.ssh/c-ed25519-sk.pub - nates users - ${./keys/c-ed25519-sk.pub}"
     ];
   };
 }

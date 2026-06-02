@@ -1,16 +1,28 @@
 { config, pkgs, lib, ... }:
 let
-  homeDirectory = "/home/nates";
+  cfg = config.yubikey;
+  homeDirectory = "/home/${cfg.user}";
 
   yubikeyIds = lib.concatStringsSep " " (
-    lib.mapAttrsToList (name: id: "[${name}]=\"${builtins.toString id}\"") config.yubikey.identifiers
+    lib.mapAttrsToList (name: id: "[${name}]=\"${builtins.toString id}\"") cfg.identifiers
   );
 
-  # Symlinks ~/.ssh/id_yubikey to the key matching whichever yubikey is plugged in
+  # Symlinks ~/.ssh/id_yubikey to the key matching whichever yubikey is plugged in,
+  # downloading the resident key from the yubikey first if we haven't seen it before.
   yubikey-up = pkgs.writeShellApplication {
     name = "yubikey-up";
-    runtimeInputs = with pkgs; [ gawk yubikey-manager ];
+    runtimeInputs = with pkgs; [ gawk yubikey-manager openssh util-linux libnotify ];
     text = ''
+      notify() {
+        local msg="$1"
+        logger -t yubikey "$msg"
+        local uid
+        uid=$(id -u ${cfg.user})
+        runuser -u ${cfg.user} -- \
+          env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+          notify-send --app-name="YubiKey" "YubiKey" "$msg" 2>/dev/null || true
+      }
+
       serial=$(ykman list | awk '{print $NF}')
       if [ -z "$serial" ]; then
         exit 0
@@ -26,25 +38,60 @@ let
       done
 
       if [ -z "$key_name" ]; then
-        echo "WARNING: Unidentified yubikey with serial $serial. Won't link an SSH key."
+        notify "Unidentified YubiKey plugged in (serial: $serial) — no SSH key linked"
         exit 0
+      fi
+
+      notify "YubiKey '$key_name' plugged in"
+
+      # First time seeing this yubikey on this machine — download its resident key
+      if [ ! -f "${homeDirectory}/.ssh/$key_name-ed25519-sk" ]; then
+        notify "Extracting resident key for '$key_name' from YubiKey..."
+        tmp=$(mktemp -d)
+        chown ${cfg.user}:users "$tmp"
+        runuser -u ${cfg.user} -- sh -c "cd '$tmp' && ssh-keygen -K"
+        for f in "$tmp"/id_ed25519_sk_rk*; do
+          [ -f "$f" ] || continue
+          if [[ "$f" == *.pub ]]; then
+            dest="${homeDirectory}/.ssh/$key_name-ed25519-sk.pub"
+          else
+            dest="${homeDirectory}/.ssh/$key_name-ed25519-sk"
+          fi
+          mv "$f" "$dest"
+          chown ${cfg.user}:users "$dest"
+          [[ "$dest" != *.pub ]] && chmod 600 "$dest"
+        done
+        rm -rf "$tmp"
+        notify "Resident key for '$key_name' saved to ~/.ssh/"
       fi
 
       ln -sf "${homeDirectory}/.ssh/$key_name-ed25519-sk" "${homeDirectory}/.ssh/id_yubikey"
       ln -sf "${homeDirectory}/.ssh/$key_name-ed25519-sk.pub" "${homeDirectory}/.ssh/id_yubikey.pub"
+      notify "SSH identity linked to '$key_name'"
     '';
   };
 
   yubikey-down = pkgs.writeShellApplication {
     name = "yubikey-down";
+    runtimeInputs = with pkgs; [ util-linux libnotify ];
     text = ''
       rm -f "${homeDirectory}/.ssh/id_yubikey"
       rm -f "${homeDirectory}/.ssh/id_yubikey.pub"
+      msg="YubiKey unplugged, SSH identity unlinked"
+      logger -t yubikey "$msg"
+      uid=$(id -u ${cfg.user})
+      runuser -u ${cfg.user} -- \
+        env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+        notify-send --app-name="YubiKey" "YubiKey" "$msg" 2>/dev/null || true
     '';
   };
 in {
   options.yubikey = {
     enable = lib.mkEnableOption "yubikey support";
+    user = lib.mkOption {
+      type = lib.types.str;
+      description = "User to link the YubiKey SSH identity for.";
+    };
     identifiers = lib.mkOption {
       default = {};
       type = lib.types.attrsOf lib.types.int;
@@ -57,7 +104,7 @@ in {
     };
   };
 
-  config = lib.mkIf config.yubikey.enable {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       yubikey-manager
       pam_u2f
@@ -71,7 +118,7 @@ in {
       # Link ~/.ssh/id_yubikey to the plugged-in key
       SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="1050", RUN+="${lib.getBin yubikey-up}/bin/yubikey-up"
       SUBSYSTEM=="hid", ACTION=="remove", ENV{HID_NAME}=="Yubico Yubi*", RUN+="${lib.getBin yubikey-down}/bin/yubikey-down"
-    '' + lib.optionalString config.yubikey.lockOnRemove ''
+    '' + lib.optionalString cfg.lockOnRemove ''
       # Lock the session when yubikey is unplugged
       SUBSYSTEM=="hid", ACTION=="remove", ENV{HID_NAME}=="Yubico YubiKey OTP+FIDO+CCID", RUN+="${pkgs.systemd}/bin/loginctl lock-sessions"
     '';
