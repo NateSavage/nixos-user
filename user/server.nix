@@ -6,12 +6,18 @@
 
   users.nates.openssh = true;
 
-  # Copy the host's SSH keypair into nates' .ssh so it can be used for
-  # outbound git/SSH auth (e.g. GitHub) without a YubiKey on the server.
-  systemd.tmpfiles.rules = [
-    "C /home/nates/.ssh/id_server     0600 nates users - /etc/ssh/ssh_host_ed25519_key"
-    "C /home/nates/.ssh/id_server.pub 0644 nates users - /etc/ssh/ssh_host_ed25519_key.pub"
-  ];
+  # Generate a dedicated SSH identity for outbound git/SSH auth (e.g. GitHub).
+  # Runs once on first boot; the key persists across rebuilds.
+  systemd.services."nates-ssh-keygen" = {
+    description = "Generate nates server SSH identity";
+    wantedBy = [ "multi-user.target" ];
+    unitConfig.ConditionPathExists = "!/home/nates/.ssh/id_server";
+    serviceConfig = {
+      Type = "oneshot";
+      User = "nates";
+      ExecStart = "${pkgs.openssh}/bin/ssh-keygen -t ed25519 -f /home/nates/.ssh/id_server -N \"\" -C \"nates@nox\"";
+    };
+  };
 
   # nh (nix helper) requires these
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
