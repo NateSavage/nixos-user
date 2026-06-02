@@ -1,0 +1,5 @@
+{ ... }: {
+  environment.shellAliases = {
+    fd = "yazi";
+  };
+}

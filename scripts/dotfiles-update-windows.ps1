@@ -1,6 +1,7 @@
 $folders = @{
     "$env:APPDATA\Zed"       = "dotfiles\.config\zed"
     "$env:LOCALAPPDATA\nvim" = "dotfiles\.config\nvim"
+    "$env:APPDATA\yazi\config"  = "dotfiles\.config\yazi"
 }
 
 foreach ($srcFolder in $folders.Keys) {
