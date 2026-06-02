@@ -7,6 +7,14 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "format_on_save": "off",
+  "cli_default_open_behavior": "existing_window",
+  "collaboration_panel": {
+    "dock": "left",
+  },
+  "git_panel": {
+    "dock": "left",
+  },
   "ssh_connections": [
     {
       "host": "nox.lan",
@@ -14,34 +22,52 @@
       "args": [],
       "projects": [
         {
-          "paths": [
-            "/home/nate"
-          ]
+          "paths": ["/home/nate"],
         },
         {
-          "paths": [
-            "/home/nate/infra"
-          ]
+          "paths": ["/home/nate/infra"],
         },
         {
-          "paths": [
-            "/mnt/arc/public/infra"
-          ]
-        }
-      ]
-    }
+          "paths": ["/mnt/arc/public/infra"],
+        },
+      ],
+    },
+    {
+      "host": "beepbox.lan",
+      "username": "nates",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/nates"],
+        },
+        {
+          "paths": ["/home/nates/projects/nix"],
+        },
+      ],
+    },
+    {
+      "host": "beepbox.lan",
+      "username": "nates",
+      "args": [],
+      "projects": [],
+    },
   ],
   "outline_panel": {
     "dock": "right",
   },
   "agent_servers": {
+    "opencode": {
+      "type": "registry",
+    },
     "claude-acp": {
       "type": "registry",
-      "default_model": "sonnet"
+      "default_model": "sonnet",
     },
-    "your_agent": {
+    "Martin": {
       "type": "custom",
-      "command": "path_to_executable",
+      "command": "openclaw",
+      "args": ["acp", "--url", "wss://beepbox.local:18789", "--token-file", "~/.openclaw/gateway.token"],
+      "env": {},
     },
   },
   "toolbar": {
@@ -107,6 +133,7 @@
   "buffer_font_family": "0xProto Nerd Font Mono",
   "base_keymap": "JetBrains",
   "agent": {
+    "dock": "right",
     "use_modifier_to_send": true,
     "default_profile": "write",
     "default_model": {

@@ -10,6 +10,7 @@ M.base = {
     -- base links in neovim 0.11
     ["@attribute"]                         = { fg = c.Type },
     ["@comment"]                           = { fg = c.Comment },
+    ["@comment.documentation"]             = { fg = c.Documentation },
     ["@constant"]                          = { fg = c.Value },
     ["@constant.macro"]                    = { fg = c.Function },
     ["@function"]                          = { fg = c.Function },
@@ -17,11 +18,15 @@ M.base = {
     ["@keyword"]                           = { fg = c.KeyWord },
     ["@module"]                            = { fg = c.Type },
     ["@number"]                            = { fg = c.Value },
+    ["@number.float"]                      = { fg = c.Value },
     ["@operator"]                          = { fg = c.Syntax },
     ["@property"]                          = { fg = c.Reference },
     ["@string"]                            = { fg = c.LightOrange },
     ["@string.regexp"]                     = { fg = c.Cyan },
     ["@string.special"]                    = { fg = c.Cyan },
+    ["@tag"]                               = { fg = c.DarkBlue },       -- HTML/JSX tag names
+    ["@tag.attribute"]                     = { fg = c.LightBlue },      -- HTML attribute names
+    ["@tag.delimiter"]                     = { fg = c.Gray },            -- < > </ />
     ["@type"]                              = { fg = c.Type },
     ["@type.definition"]                   = { fg = c.Type },
     ["@type.qualifier"]                    = { fg = c.Type },
@@ -52,7 +57,7 @@ M.base = {
     Float                                  = { fg = c.Red },
     FloatBorder                            = { fg = c.fg, bg = c.bg }, -- used for floating window borders
     FloatTitle                             = { fg = c.Red },
-    FoldColumn                             = { fg = c.accent, bg = c.dark },
+    FoldColumn                             = { fg = c.context, bg = c.dark },
     Function                               = { fg = c.Function },
 
     -- base groups without links in neovim 0.11
@@ -81,9 +86,9 @@ M.base = {
     DiffText                               = { fg = c.dark, bg = c.DiffText },
     --FloatShadow
     --FloatShadowThrough
-    Folded                                 = { fg = c.accent, bg = c.dark },
+    Folded                                 = { fg = c.context, bg = c.dark },
     Identifier                             = { fg = c.fg },
-    lCursor                                = { fg = c.cursor_fg, bg = c.cursor_bg },
+    lCursor                                = { fg = c.CursorFG, bg = c.CursorBG },
     LineNr                                 = { fg = c.context }, -- line number display on the far left
     -- luaBlock
     -- luaCondElseif
@@ -154,7 +159,7 @@ M.base = {
   WinBarNC
   ]] --
 
-    CursorIM = { fg = c.cursor_fg, bg = c.cursor_bg },
+    CursorIM = { fg = c.CursorFG, bg = c.CursorBG },
     Debug = { fg = c.Error },
     Define = { fg = c.purple },
     DiffAdded = { fg = c.DiffAdd },
@@ -212,7 +217,7 @@ M.base = {
     TabLineFill = { fg = c.fg, bg = c.PanelEdges },
     TabLineSel = { fg = c.fg, bg = c.dark },
     Tag = { fg = c.blue },
-    TermCursor = { fg = c.cursor_fg, bg = c.cursor_bg },
+    TermCursor = { fg = c.CursorFG, bg = c.CursorBG },
     -- TermCursorNC = { fg = c.cursor_fg, bg = c.cursor_bg },
     Title = { fg = c.blue, style = 'bold' },
     Todo = { fg = c.Documentation, bg = c.bg, style = 'bold' },
@@ -300,11 +305,13 @@ M.plugins = {
     IndentBlanklineContextChar           = { fg = c.context },
     IndentBlanklineSpaceChar             = { fg = c.blue },
     --IndentBlanklineSpaceCharBlankline = { fg = c.info_yellow },
+    IblIndent                            = { fg = c.dark_gray },
+    IblScope                             = { fg = c.context },
     -- Lsp
-    DiagnosticFloatingError              = { fg = c.error_red },
-    DiagnosticFloatingHint               = { fg = c.hint_blue },
-    DiagnosticFloatingInfo               = { fg = c.info_yellow },
-    DiagnosticFloatingWarn               = { fg = c.warning_orange },
+    DiagnosticFloatingError              = { fg = c.Error },
+    DiagnosticFloatingHint               = { fg = c.Hint },
+    DiagnosticFloatingInfo               = { fg = c.Info },
+    DiagnosticFloatingWarn               = { fg = c.Warning },
     DiagnosticSignError                  = { fg = c.Error },
     DiagnosticSignHint                   = { fg = c.Hint },
     DiagnosticSignInfo                   = { fg = c.Info },
@@ -418,6 +425,7 @@ M.treesitter = {
 
 M.csharp = {
     --["@lsp.type.namespace.cs"] = { fg = c.Type },       -- lsp
+    ["@lsp.type.struct.cs"]    = { fg = c.Value },
     csPreProcDeclaration   = { fg = c.Preprocessor },
     csXmlLineComment       = { fg = c.Documentation },
     csXmlLineCommentLeader = { fg = c.Documentation },
@@ -439,6 +447,25 @@ M.yazi = {
 }
 ]] --
 
+M.html = {
+    ["@tag.html"]               = { fg = c.DarkBlue },      -- <div>, <p>, <span>
+    ["@tag.attribute.html"]     = { fg = c.LightBlue },     -- class=, href=, id=
+    ["@tag.delimiter.html"]     = { fg = c.Gray },           -- < > </ />
+    ["@string.html"]            = { fg = c.LightOrange },   -- "attribute-value"
+    ["@markup.heading.1.html"]  = { fg = c.fg },
+    ["@markup.heading.2.html"]  = { fg = c.fg },
+    ["@markup.heading.3.html"]  = { fg = c.fg },
+    ["@markup.heading.4.html"]  = { fg = c.fg },
+    ["@markup.heading.5.html"]  = { fg = c.fg },
+    ["@markup.heading.6.html"]  = { fg = c.fg },
+}
+
+M.css = {
+    ["@keyword.css"]            = { fg = c.FlowControl },   -- @media, @keyframes, @import
+    ["@variable.css"]           = { fg = c.LightBlue },     -- --custom-property
+    ["@string.special.css"]     = { fg = c.LightOrange },   -- plain values: flex, block, solid
+}
+
 M.gitgutter = {
     GitGutterAdd        = { fg = c.DiffAdd },
     GitGutterAddLine    = { fg = c.DiffAdd },
@@ -446,6 +473,10 @@ M.gitgutter = {
     GitGutterChangeLine = { fg = c.DiffChange },
     GitGutterDelete     = { fg = c.DiffDelete },
     GitGutterDeleteLine = { fg = c.DiffDelete },
+}
+
+M.origami = {
+    OrigamiFoldedLines = { fg = c.FlowControl },
 }
 
 M.harpoon = {

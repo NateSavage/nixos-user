@@ -9,6 +9,10 @@ return {
     ensure_installed = {
         "lua-language-server",
         "just-lsp",
+        "html-lsp",
+        "css-lsp",
+        "astro-language-server",
+        "nil",
     },
   },
   ---@param opts MasonSettings | {ensure_installed: string[]}

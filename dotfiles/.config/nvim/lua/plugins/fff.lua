@@ -17,8 +17,8 @@ return {
       preview_size = 0.5,
     },
     debug = {
-      enabled = true,     -- we expect your collaboration at least during the beta
-      show_scores = true, -- to help us optimize the scoring system, feel free to share your scores!
+      enabled = false,
+      show_scores = false,
     },
     keymaps = {
       move_up = { '<Up>', '<A-k>' },

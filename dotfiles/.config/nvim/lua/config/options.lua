@@ -1,33 +1,50 @@
+vim.filetype.add({
+    extension = { csproj = "csproj" },
+})
+
 vim.opt.number = true
 
 -- no swapefiles
 vim.opt.swapfile = false
 
--- relative line numbers with the selected line being absolute
-vim.opt.nu = true
-vim.opt.relativenumber = true
+-- don't display line numbers on the left edge of the screen
+vim.opt.nu = false
+vim.opt.relativenumber = false
 
 vim.opt.showtabline = 2
 
--- TODO: set tab length to be variable per file type, 4 makes sense for C#, 2 makes sense for lua
--- 8 space tabs being the default is crazy
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.smartindent = true
 
--- set tabs to 4 spaces when gdscript files are opened (gdscript is sensitive to whitespace)
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "lua" },
+    callback = function()
+        vim.bo.tabstop = 2
+        vim.bo.softtabstop = 2
+        vim.bo.shiftwidth = 2
+        vim.bo.expandtab = true
+    end,
+})
+
+-- gdscript is whitespace-sensitive and requires real tabs
 vim.api.nvim_create_autocmd("FileType", {
     pattern = { "gdscript" },
     callback = function()
-        vim.bo.sw = 4
-        vim.bo.sts = 4
-        vim.bo.ts = 4
-        vim.bo.expandtab = false
+        vim.bo.tabstop = 4
         vim.bo.softtabstop = 4
+        vim.bo.shiftwidth = 4
+        vim.bo.expandtab = false
     end,
 })
+
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.opt.foldlevel = 99
+vim.opt.foldenable = true
+vim.opt.foldcolumn = '0'
 
 vim.opt.colorcolumn = "121" --"+1" -- highlight column after text width
 --vim.opt.textwidth = 120

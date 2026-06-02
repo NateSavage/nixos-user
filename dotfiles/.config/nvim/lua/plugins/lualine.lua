@@ -135,6 +135,14 @@ return {
         end
     end,
 
+    config = function(_, opts)
+        local lualine = require('lualine')
+        lualine.setup(opts)
+        vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach', 'LspProgress' }, {
+            callback = function() lualine.refresh() end,
+        })
+    end,
+
     opts = function()
         ins_left {
             function() return '▊' end,
@@ -144,7 +152,7 @@ return {
 
         ins_left {
             -- mode component
-            function() return '' end,
+            function() return '' end,
             color = { fg = colors.red },
             padding = { right = 1, left = 1 },
         }
@@ -167,7 +175,7 @@ return {
         ins_left {
             'diagnostics',
             sources = { 'nvim_diagnostic' },
-            symbols = { error = ' ', warn = ' ', info = ' ' },
+            symbols = { error = ' ', warn = ' ', info = ' ' },
             diagnostics_color = {
                 error = { fg = colors.red },
                 warn = { fg = colors.yellow },
@@ -182,33 +190,36 @@ return {
         }
 
         ins_left {
-            symbols = {
-                -- Standard unicode symbols to cycle through for LSP progress:
-                spinner = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' },
-                -- Standard unicode symbol for when LSP is done:
-                done = '✓',
-                -- Delimiter inserted between LSP names:
-                separator = ' ',
-            },
-            -- List of LSP names to ignore (e.g., `null-ls`):
-            ignore_lsp = {},
-            -- Lsp server name .
             function()
-                local msg = 'No Language Server'
-                local buf_ft = vim.api.nvim_get_option_value('filetype', { buf = 0 })
-                local clients = vim.lsp.get_clients()
-                if next(clients) == nil then
-                    return msg
-                end
-                for _, client in ipairs(clients) do
-                    local filetypes = client.config.filetypes
-                    if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
-                        return client.name
+                local fixed_width = 40
+                local status = vim.lsp.status()
+                local text
+                if status and status ~= '' then
+                    text = status
+                elseif vim.b.lsp_loading then
+                    text = 'Loading...'
+                elseif vim.b.lsp_stopped then
+                    text = vim.b.lsp_stopped .. ' (stopped)'
+                else
+                    local buf_ft = vim.api.nvim_get_option_value('filetype', { buf = 0 })
+                    local clients = vim.lsp.get_clients({ bufnr = 0 })
+                    text = 'No Language Server'
+                    for _, client in ipairs(clients) do
+                        local filetypes = client.config.filetypes
+                        if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
+                            text = client.name
+                            break
+                        end
                     end
                 end
-                return msg
+
+                if #text > fixed_width then
+                    text = text:sub(1, fixed_width - 1) .. '…'
+                end
+                local pad = math.floor((fixed_width - #text) / 2)
+                return string.rep(' ', pad) .. text .. string.rep(' ', fixed_width - #text - pad)
             end,
-            icon = '',
+            icon = '',
             color = { fg = colors.fg, gui = 'bold' },
         }
 
