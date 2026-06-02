@@ -88,15 +88,6 @@ in {
       }) [ "public" "archive" "eromancer" "panopticom" ];
     };
 
-    yubikey = {
-      enable = true;
-      user = "nates";
-      identifiers = {
-        a = 31114443;
-        c = 27429156;
-      };
-    };
-
     services.openssh = lib.mkIf cfg.openssh {
       enable = true;
       settings = {

@@ -13,7 +13,15 @@
     trusted-public-keys = [ "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE=" ];
   };
 
-  yubikey.lockOnRemove = true;
+  yubikey = {
+    enable = true;
+    user = "nates";
+    lockOnRemove = true;
+    identifiers = {
+      a = 31114443;
+      c = 27429156;
+    };
+  };
   users.nates.openssh = true;
 
   # AppImage support
