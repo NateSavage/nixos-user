@@ -31,7 +31,7 @@
 
   # One tmpfiles symlink rule per dotfile
   dotfileRules = map (relPath:
-    "L /home/nates/${relPath} - - - - ${dotfilesDir}/${relPath}"
+    "L /home/nates/${relPath} - nates users - ${dotfilesDir}/${relPath}"
   ) (listFilesRelative dotfilesDir);
 in {
 
