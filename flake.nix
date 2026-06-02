@@ -7,6 +7,7 @@
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, ... }: let
+    flakeLib = import ./lib { lib = nixpkgs.lib; };
     # Overlays that expose pkgs.stable and pkgs.unstable in any module
     stableOverlay = final: prev: {
       stable = import nixpkgs {
@@ -22,18 +23,23 @@
     };
   in {
 
-    # NixOS modules for importing into machine flakes.
-    # Usage: imports = [ inputs.user-nates.nixosModules.desktop ];
-    # pkgs.<name> resolves to unstable. Use pkgs.stable.<name> to pin to stable.
+    lib = flakeLib;
+
     nixosModules = {
-      desktop = { imports = [
-        { nixpkgs.overlays = [ stableOverlay unstableOverlay ]; }
-        ./users/nates/desktop.nix
-      ]; };
-      server = { imports = [
-        { nixpkgs.overlays = [ stableOverlay unstableOverlay ]; }
-        ./users/nates/server.nix
-      ]; };
+      desktop = {
+        imports = [
+          { nixpkgs.overlays = [ stableOverlay unstableOverlay ]; }
+          { _module.args.flakeLib = flakeLib; }
+          ./user/desktop.nix
+        ];
+      };
+      server = {
+        imports = [
+          { nixpkgs.overlays = [ stableOverlay unstableOverlay ]; }
+          { _module.args.flakeLib = flakeLib; }
+          ./user/server.nix
+        ];
+      };
     };
 
   };

@@ -1,0 +1,3 @@
+{ flakeLib, ... }: {
+  imports = flakeLib.importDir ./.;
+}
