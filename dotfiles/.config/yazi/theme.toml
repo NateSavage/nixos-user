@@ -80,6 +80,6 @@ rules = [
   { mime = "application/x-bzip2",         fg = "#dcdca9" },
   { mime = "application/x-7z-compressed", fg = "#dcdca9" },
   { mime = "application/x-rar",           fg = "#dcdca9" },
-  { mime = "*/*",             fg = "#D4D4D4" },
-  { mime = "inode/directory", fg = "#569cd6" },
+  { name = "*",  fg = "#D4D4D4" },
+  { name = "*/", fg = "#569cd6" },
 ]
