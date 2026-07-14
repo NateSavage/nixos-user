@@ -168,7 +168,12 @@ in
       path = with pkgs; [ gnugrep gawk ];
       script = ''
         set -euo pipefail
-        PS="powershell.exe -NoProfile -NonInteractive -Command"
+        # Interactive WSL shells get Windows' PATH appended by WSL's own
+        # interop layer, but systemd services don't inherit that - so
+        # "powershell.exe" alone won't resolve here. Call it by absolute
+        # path through the mounted Windows drive instead. Adjust if your
+        # automount root or drive letter differs from the WSL default.
+        PS="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -NonInteractive -Command"
 
         if ! $PS "Get-Command usbipd -ErrorAction SilentlyContinue" >/dev/null 2>&1; then
           echo "Installing usbipd-win..."
