@@ -82,6 +82,13 @@ in
     # wants a fixed busid - ours is discovered dynamically below instead.
     wsl.usbip.enable = true;
 
+    # The kernel module that actually makes USB/IP attach possible on the
+    # client side. Not guaranteed to auto-load on WSL - this makes sure it
+    # does at boot via systemd-modules-load.service. If `modprobe vhci-hcd`
+    # fails manually, this kernel doesn't have USB/IP client support
+    # compiled in at all, which needs a custom WSL2 kernel, not a config fix.
+    boot.kernelModules = [ "vhci-hcd" ];
+
     # usbutils (lsusb) for debugging the attach. Packages/udev rules for
     # the key itself (yubikey-manager, yubikey-personalization) come from
     # modules/yubikey.nix when that's enabled - not duplicated here.
@@ -92,11 +99,13 @@ in
     # the key is plugged in and shared from Windows.
     systemd.services.usbip-yubikey-attach = {
       description = "Attach YubiKey over USB/IP by vendor ID";
-      after = [ "network.target" ];
+      after = [ "systemd-modules-load.service" "network.target" ];
       serviceConfig.Type = "oneshot";
-      path = with pkgs; [ iproute2 gnugrep gnused linuxPackages.usbip ];
+      path = with pkgs; [ iproute2 gnugrep gnused linuxPackages.usbip kmod ];
       script = ''
         set -euo pipefail
+
+        modprobe vhci-hcd 2>/dev/null || echo "usbip-yubikey-attach: modprobe vhci-hcd failed" >&2
 
         WINIP="$(ip route list | sed -nE 's/(default)? via ([0-9.]+) dev eth0.*/\2/p' | head -n1)"
         if [ -z "$WINIP" ]; then
