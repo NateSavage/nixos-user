@@ -100,12 +100,26 @@ in
     systemd.services.usbip-yubikey-attach = {
       description = "Attach YubiKey over USB/IP by vendor ID";
       after = [ "systemd-modules-load.service" "network.target" ];
-      serviceConfig.Type = "oneshot";
-      path = with pkgs; [ iproute2 gnugrep gnused linuxPackages.usbip kmod ];
+      serviceConfig = {
+        Type = "oneshot";
+        # Backstop in case something else unexpectedly blocks - the timeout
+        # calls below should make this a non-issue on their own.
+        TimeoutStartSec = "15s";
+      };
+      path = with pkgs; [ iproute2 gnugrep gnused linuxPackages.usbip kmod coreutils systemd ];
       script = ''
         set -euo pipefail
 
         modprobe vhci-hcd 2>/dev/null || echo "usbip-yubikey-attach: modprobe vhci-hcd failed" >&2
+
+        # WSL doesn't reliably coldplug-trigger already-loaded kernel devices
+        # into udev's database, which is what usbip's vhci_hcd lookup depends
+        # on (see nix-community/NixOS-WSL#241 and many similar reports
+        # against usbipd-win with the same "udev_device_new_from_subsystem_
+        # sysname failed" error). Force it explicitly rather than assuming
+        # services.udev.enable alone gets there in time.
+        udevadm trigger
+        udevadm settle --timeout=5 || true
 
         WINIP="$(ip route list | sed -nE 's/(default)? via ([0-9.]+) dev eth0.*/\2/p' | head -n1)"
         if [ -z "$WINIP" ]; then
@@ -113,16 +127,20 @@ in
           exit 0
         fi
 
-        BUSID="$(usbip list --remote="$WINIP" 2>/dev/null \
+        # timeout here matters: if nothing's listening on the Windows side
+        # yet (usbipd-win not installed/sharing), an unreachable connect
+        # attempt can hang far longer than this service - and this service
+        # blocks `nixos-rebuild switch` while it runs.
+        BUSID="$(timeout 5s usbip list --remote="$WINIP" 2>/dev/null \
           | grep -E '\(${cfg.vendorId}:' \
           | sed -E 's/^[[:space:]]*([0-9]+-[0-9.]+):.*/\1/' \
           | head -n1)"
         if [ -z "$BUSID" ]; then
-          echo "usbip-yubikey-attach: no device with vendor ${cfg.vendorId} shared from $WINIP" >&2
+          echo "usbip-yubikey-attach: no device with vendor ${cfg.vendorId} shared from $WINIP (or timed out reaching it)" >&2
           exit 0
         fi
 
-        usbip attach --remote="$WINIP" --busid="$BUSID" || true
+        timeout 5s usbip attach --remote="$WINIP" --busid="$BUSID" || true
       '';
     };
 
