@@ -118,7 +118,7 @@ in
         # against usbipd-win with the same "udev_device_new_from_subsystem_
         # sysname failed" error). Force it explicitly rather than assuming
         # services.udev.enable alone gets there in time.
-        udevadm trigger
+        udevadm trigger || true
         udevadm settle --timeout=5 || true
 
         WINIP="$(ip route list | sed -nE 's/(default)? via ([0-9.]+) dev eth0.*/\2/p' | head -n1)"
