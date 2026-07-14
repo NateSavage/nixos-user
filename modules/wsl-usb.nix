@@ -177,7 +177,7 @@ in
 
         if ! $PS "Get-Command usbipd -ErrorAction SilentlyContinue" >/dev/null 2>&1; then
           echo "Installing usbipd-win..."
-          $PS "winget install --id dorssel.usbipd -e --accept-source-agreements --accept-package-agreements"
+          $PS "winget install --id dorssel.usbipd-win -e --accept-source-agreements --accept-package-agreements"
         fi
 
         echo "Looking for a device with vendor ${cfg.vendorId}..."
