@@ -20,10 +20,13 @@
 # ...and this module activates on its own. `vendorId` still defaults to
 # Yubico (1050) but can be overridden per-machine if needed.
 #
-# One-time per machine, from inside WSL:
+# Runs itself automatically on first boot of a new WSL machine (gated by
+# a marker file so it only ever runs once, and retries on the next boot
+# if it failed - e.g. the key wasn't plugged in yet). Installs usbipd-win
+# on Windows if it's missing, and binds/shares the device. It will prompt
+# for one admin approval on the Windows side. To force it manually
+# (e.g. to retry immediately instead of waiting for a reboot):
 #   systemctl start wsl-usbip-bootstrap.service
-# This installs usbipd-win on Windows if it's missing, and binds/shares
-# the device. It will prompt for one admin approval on the Windows side.
 #
 # After that, usbip-yubikey-attach.service (plus its timer) keeps the
 # device attached automatically, including after replug or reboot.
@@ -156,39 +159,48 @@ in
       };
     };
 
-    # One-time, per-machine Windows-side setup. Deliberately NOT started
-    # automatically - installing software and the bind step need an
-    # elevation (UAC) prompt, which needs a live interactive Windows
-    # session to render. Trigger it yourself after setting up a new
-    # machine:
-    #   systemctl start wsl-usbip-bootstrap.service
+    # Runs automatically once per machine on first boot (gated by the
+    # marker file below, in the same style as server.nix's
+    # nates-ssh-keygen). Safe to assume an interactive Windows session
+    # exists here for the UAC prompt: a WSL instance only boots because
+    # someone launched it from one in the first place. If it fails (e.g.
+    # the key isn't plugged in yet), the marker is never written, so it
+    # tries again on the next boot instead of going silent forever.
     systemd.services.wsl-usbip-bootstrap = {
       description = "One-time Windows-side setup for YubiKey USB/IP sharing";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network.target" ];
+      unitConfig.ConditionPathExists = "!/var/lib/wsl-usbip-bootstrap-done";
       serviceConfig.Type = "oneshot";
-      path = with pkgs; [ gnugrep gawk ];
+      path = with pkgs; [ gnugrep gawk coreutils ];
       script = ''
         set -euo pipefail
         # Interactive WSL shells get Windows' PATH appended by WSL's own
-        # interop layer, but systemd services don't inherit that - so
-        # "powershell.exe" alone won't resolve here. Call it by absolute
-        # path through the mounted Windows drive instead. Adjust if your
-        # automount root or drive letter differs from the WSL default.
+        # interop layer, but systemd services don't inherit that, and a
+        # freshly-spawned powershell.exe here doesn't pick up PATH changes
+        # winget itself just made either. Call Windows binaries by known
+        # absolute path instead of relying on PATH resolution at all.
+        # Adjust if your automount root or drive letter differs from the
+        # WSL default.
         PS="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -NonInteractive -Command"
+        USBIPD='C:\Program Files\usbipd-win\usbipd.exe'
 
-        if ! $PS "Get-Command usbipd -ErrorAction SilentlyContinue" >/dev/null 2>&1; then
+        if ! $PS "if (-not (Test-Path '$USBIPD')) { exit 1 }"; then
           echo "Installing usbipd-win..."
           $PS "winget install --id dorssel.usbipd-win -e --accept-source-agreements --accept-package-agreements"
         fi
 
         echo "Looking for a device with vendor ${cfg.vendorId}..."
-        BUSID="$($PS "usbipd list" | grep -i "${cfg.vendorId}:" | awk '{print $1}' | head -n1)"
+        BUSID="$($PS "& '$USBIPD' list" | grep -i "${cfg.vendorId}:" | awk '{print $1}' | head -n1)"
         if [ -z "$BUSID" ]; then
-          echo "No device with vendor ${cfg.vendorId} found - is it plugged in?" >&2
+          echo "No device with vendor ${cfg.vendorId} found - is it plugged in? Will retry next boot." >&2
           exit 1
         fi
 
         echo "Binding busid $BUSID (approve the admin prompt on Windows)..."
-        $PS "Start-Process usbipd -ArgumentList 'bind','--busid=$BUSID' -Verb RunAs -Wait"
+        $PS "Start-Process '$USBIPD' -ArgumentList 'bind','--busid=$BUSID' -Verb RunAs -Wait"
+
+        touch /var/lib/wsl-usbip-bootstrap-done
 
         echo "Done. usbip-yubikey-attach.service will pick it up within 45s,"
         echo "or run: systemctl start usbip-yubikey-attach.service"
