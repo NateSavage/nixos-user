@@ -38,6 +38,12 @@
           ./user/server.nix
         ];
       };
+      headless = {
+        imports = [
+          { nixpkgs.overlays = [ stableOverlay unstableOverlay ]; }
+          ./user/headless.nix
+        ];
+      };
     };
 
   };

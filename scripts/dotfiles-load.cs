@@ -23,7 +23,7 @@ if (isWindows) {
             continue;
         }
 
-        if (Directory.Exists(dst)) Directory.Delete(dst, recursive: true);
+        if (Directory.Exists(dst)) DeleteDirectory(dst);
         Directory.CreateDirectory(dst);
 
         foreach (var file in Directory.EnumerateFiles(src, "*", SearchOption.AllDirectories)) {
@@ -40,6 +40,12 @@ else {
     var home = $"/home/{username}";
     Run("sudo", $"find {home} -type l -lname \"/nix/store/*/dotfiles/*\" -delete");
     Run("sudo", "systemd-tmpfiles --create");
+}
+
+static void DeleteDirectory(string path) {
+    foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+        File.SetAttributes(file, FileAttributes.Normal);
+    Directory.Delete(path, recursive: true);
 }
 
 static void Run(string cmd, string args) {
