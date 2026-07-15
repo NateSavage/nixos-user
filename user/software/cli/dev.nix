@@ -1,6 +1,6 @@
 { pkgs, ... }: {
   users.users.nates.packages = with pkgs; [
-    stable.dotnetCorePackages.sdk_9_0_1xx
+    stable.dotnetCorePackages.dotnet-sdk_10
     stable.git
     stable.git-lfs
     stable.just
