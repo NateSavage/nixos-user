@@ -5,8 +5,11 @@ vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true, silent = true })
 
 -- word jumping
-vim.keymap.set("n", "h", "b", { noremap = true, silent = true, desc = "Jump to start of previous word" })
-vim.keymap.set("n", "l", "e", { noremap = true, silent = true, desc = "Jump to end of next word" })
+vim.keymap.set("n", "<C-h>", "b", { noremap = true, silent = true, desc = "Jump to start of previous word" })
+vim.keymap.set("n", "<C-l>", "e", { noremap = true, silent = true, desc = "Jump to end of next word" })
+
+vim.keymap.set("n", "<C-j>", "j", { noremap = true, silent = true, desc = "Down" })
+vim.keymap.set("n", "<C-k>", "k", { noremap = true, silent = true, desc = "Up" })
 
 -- quick quit
 vim.keymap.set("n", "q", ":q<CR>", { noremap = true, silent = true })
@@ -36,9 +39,13 @@ vim.keymap.set('n', '<A-j>', '<C-d>', { noremap = true, silent = true })
 
 vim.keymap.set("n", "rn", ":IncRename ")
 
--- backspace deletes to start of previous word
-vim.keymap.set('n', '<BS>', 'db', { noremap = true, silent = true, desc = "Delete to start of previous word" })
-vim.keymap.set('i', '<BS>', '<C-w>', { noremap = true, silent = true, desc = "Delete to start of previous word" })
+-- delete in normal mode and ctrl+delete for delete to start of word
+vim.keymap.set("n", "<BS>", "hx", { noremap = true, silent = true, desc = 'Delete previous character' })
+vim.keymap.set("n", "<C-BS>", "db", { noremap = true, silent = true, desc = 'Delete to start of word, some terminals eat ctrl+backspace' })
+vim.keymap.set("i", "<C-BS>", "db", { noremap = true, silent = true, desc = 'Delete to start of word' })
+
+
+vim.keymap.set("n", "<M-v>", "<C-v>", { noremap = true, silent = true, desc = 'Delete to start of word' })
 
 -- shift+space, ctrl+space, and alt+space as the _ character in insert mode
 -- not all terminals recognize shift + space as a different input from just spacebar
