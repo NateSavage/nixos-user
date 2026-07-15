@@ -133,11 +133,13 @@ static Dictionary<string, string> GetStorageItems(bool platformIsWindows) {
 
     if (!platformIsWindows) {
         return new Dictionary<string, string>() {
-            [Path.Combine(home, ".gitconfig")]         = Path.Combine("dotfiles", ".gitconfig"),
-            [Path.Combine(home, ".ssh", "config")]     = Path.Combine("dotfiles", ".ssh", "config"),
-            [Path.Combine(home, ".config", "nvim")]   = Path.Combine("dotfiles", ".config", "nvim"),
-            [Path.Combine(home, ".config", "yazi")]   = Path.Combine("dotfiles", ".config", "yazi"),
-            [Path.Combine(home, ".config", "zed")]    = Path.Combine("dotfiles", ".config", "zed"),
+            [Path.Combine(home, ".gitconfig")]              = Path.Combine("dotfiles", ".gitconfig"),
+            [Path.Combine(home, ".ssh", "config")]          = Path.Combine("dotfiles", ".ssh", "config"),
+            [Path.Combine(home, ".config", "nvim")]         = Path.Combine("dotfiles", ".config", "nvim"),
+            [Path.Combine(home, ".config", "yazi")]         = Path.Combine("dotfiles", ".config", "yazi"),
+            [Path.Combine(home, ".config", "zed")]          = Path.Combine("dotfiles", ".config", "zed"),
+            [Path.Combine(home, ".config", "ion")]          = Path.Combine("dotfiles", ".config", "ion"),
+            [Path.Combine(home, ".config", "starship.toml")] = Path.Combine("dotfiles", ".config", "starship.toml"),
         };
     }
     else {
@@ -145,11 +147,12 @@ static Dictionary<string, string> GetStorageItems(bool platformIsWindows) {
         string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
         return new Dictionary<string, string>() {
-            [Path.Combine(home, ".gitconfig")]         = Path.Combine("dotfiles", ".gitconfig"),
-            [Path.Combine(home, ".ssh", "config")]     = Path.Combine("dotfiles", ".ssh", "config"),
-            [Path.Combine(localAppData, "nvim")]      = Path.Combine("dotfiles", ".config", "nvim"),
-            [Path.Combine(appData, "yazi", "config")] = Path.Combine("dotfiles", ".config", "yazi"),
-            [Path.Combine(appData, "Zed")]             = Path.Combine("dotfiles", ".config", "zed"),
+            [Path.Combine(home, ".gitconfig")]              = Path.Combine("dotfiles", ".gitconfig"),
+            [Path.Combine(home, ".ssh", "config")]          = Path.Combine("dotfiles", ".ssh", "config"),
+            [Path.Combine(localAppData, "nvim")]            = Path.Combine("dotfiles", ".config", "nvim"),
+            [Path.Combine(appData, "yazi", "config")]       = Path.Combine("dotfiles", ".config", "yazi"),
+            [Path.Combine(appData, "Zed")]                  = Path.Combine("dotfiles", ".config", "zed"),
+            [Path.Combine(home, ".config", "starship.toml")] = Path.Combine("dotfiles", ".config", "starship.toml"),
         };
     };
 }

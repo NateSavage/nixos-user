@@ -10,14 +10,25 @@ var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationDat
 var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
 if (isWindows) {
+    var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
     // Repo source -> app config destination mappings
-    var folders = new Dictionary<string, string> {
-        [Path.Combine("dotfiles", ".config", "zed")]  = Path.Combine(appData, "Zed"),
-        [Path.Combine("dotfiles", ".config", "nvim")] = Path.Combine(localAppData, "nvim"),
-        [Path.Combine("dotfiles", ".config", "yazi")] = Path.Combine(appData, "yazi", "config"),
+    var items = new Dictionary<string, string> {
+        [Path.Combine("dotfiles", ".config", "zed")]           = Path.Combine(appData, "Zed"),
+        [Path.Combine("dotfiles", ".config", "nvim")]          = Path.Combine(localAppData, "nvim"),
+        [Path.Combine("dotfiles", ".config", "yazi")]          = Path.Combine(appData, "yazi", "config"),
+        [Path.Combine("dotfiles", ".config", "starship.toml")] = Path.Combine(home, ".config", "starship.toml"),
     };
 
-    foreach (var (src, dst) in folders) {
+    foreach (var (src, dst) in items) {
+        // source is a single file
+        if (File.Exists(src)) {
+            Directory.CreateDirectory(Path.GetDirectoryName(dst)!);
+            File.Copy(src, dst, overwrite: true);
+            Console.WriteLine($"Copied {src} -> {dst}");
+            continue;
+        }
+
         if (!Directory.Exists(src)) {
             Console.WriteLine($"Skipping {src} (not found)");
             continue;
