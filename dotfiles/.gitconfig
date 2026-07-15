@@ -1,21 +1,15 @@
 [user]
-  name = Nate Savage
-  email = nates@panopticom.online
-
+	name = Nate Savage
+	email = nates@panopticom.online
 [init]
-  defaultBranch = main
-
-[filter "lfs"]
-  clean = git-lfs clean -- %f
-  smudge = git-lfs smudge -- %f
-  process = git-lfs filter-process
-  required = true
-
-[url "git@github.com:"]
-  insteadOf = https://github.com/
-
-[url "git@gitlab.com:"]
-  insteadOf = https://gitlab.com/
-
-[safe]
-  directory = /etc/nixos
+    defaultBranch = main
+[url "ssh://git@github.com"]
+	insteadOf = https://github.com
+[url "ssh://git@gitlab.com"]
+	insteadOf = https://gitlab.com
+[log]
+	showSignature = true
+[lfs]
+	enable = true
+[credential "https://forge.panopticom.online"]
+	provider = generic
