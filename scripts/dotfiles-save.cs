@@ -75,13 +75,15 @@ static void DeleteDirectory(string path) {
 }
 
 // Filename patterns and PEM/OpenSSH/PuTTY content markers for common private key formats.
-static readonly string[] PrivateKeyNames = {
+// Local functions instead of fields - top-level statement files can only contain
+// statements, local functions, and type declarations, not bare field declarations.
+static string[] PrivateKeyNames() => new[] {
     "id_rsa", "id_dsa", "id_ecdsa", "id_ed25519", "id_ed25519_sk", "id_ecdsa_sk",
 };
 
-static readonly string[] PrivateKeyExtensions = { ".pem", ".key", ".ppk" };
+static string[] PrivateKeyExtensions() => new[] { ".pem", ".key", ".ppk" };
 
-static readonly string[] PrivateKeyContentMarkers = {
+static string[] PrivateKeyContentMarkers() => new[] {
     "-----BEGIN OPENSSH PRIVATE KEY-----",
     "-----BEGIN RSA PRIVATE KEY-----",
     "-----BEGIN DSA PRIVATE KEY-----",
@@ -97,8 +99,8 @@ static bool IsPrivateKeyFile(string path) {
     // Public keys and known_hosts-style files are fine; everything else matching
     // a known private-key name/extension is treated as a key.
     if (!name.EndsWith(".pub", StringComparison.OrdinalIgnoreCase)) {
-        if (PrivateKeyNames.Contains(name)) return true;
-        if (PrivateKeyExtensions.Any(ext => name.EndsWith(ext, StringComparison.OrdinalIgnoreCase))) return true;
+        if (PrivateKeyNames().Contains(name)) return true;
+        if (PrivateKeyExtensions().Any(ext => name.EndsWith(ext, StringComparison.OrdinalIgnoreCase))) return true;
     }
 
     // Content sniff catches anything with a nonstandard name (e.g. a renamed key).
@@ -107,7 +109,7 @@ static bool IsPrivateKeyFile(string path) {
         var buffer = new char[4096];
         int read = reader.ReadBlock(buffer, 0, buffer.Length);
         var head = new string(buffer, 0, read);
-        if (PrivateKeyContentMarkers.Any(marker => head.Contains(marker))) return true;
+        if (PrivateKeyContentMarkers().Any(marker => head.Contains(marker))) return true;
     }
     catch (Exception) {
         // Unreadable/binary/locked - filename check above already ran; nothing more to do.
