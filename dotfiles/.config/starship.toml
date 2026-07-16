@@ -29,9 +29,9 @@ bar-5-text = '#a0a9cb'
 
 [cmd_duration]
 style = 'bold yellow'
-format = 'took [$duration]($style) '
+format = ' ^took [$duration]($style) '
 min_time = 2000 # commands that take longer than this many milliseconds to complete will have their run time displayed
-show_milliseconds = true
+show_milliseconds = false
 
 [direnv]
 disabled = false
