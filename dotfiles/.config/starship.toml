@@ -1,0 +1,298 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# ugly layout code
+format = '''
+[░▒▓](bar-1)${env_var.USER}[@](fg:os-icon bg:bar-1)${env_var.HOST}$os[](fg:bar-1 bg:bar-2)$directory[](fg:bar-2 bg:bar-3)$git_branch$git_status[](fg:bar-3 bg:bar-4)$nix_shell$rust$dotnet$c$cpp$conda$crystal$python$nodejs$odin$lua[](fg:bar-4 bg:bar-5)$time[](bar-5)$cmd_duration
+$shell$jobs$character'''
+
+
+add_newline = true
+palette = 'savage-dark'
+
+[character]
+success_symbol = '[❯](bold green)'
+error_symbol   = '[❯](bold red)'
+
+
+# colors 
+[palettes.savage-dark]
+bar-1 = '#a3aed2'
+os-icon = '#000000'
+bar-2 = '#769ff0'
+bar-2-text = '#e3e5e5'
+bar-3 = '#394260'
+bar-3-text = '#769ff0'
+bar-4 = '#212736'
+bar-4-text = '#769ff0'
+bar-5 = '#1d2230'
+bar-5-text = '#a0a9cb'
+
+[cmd_duration]
+style = 'bold yellow'
+format = 'took [$duration]($style) '
+min_time = 2000 # commands that take longer than this many milliseconds to complete will have their run time displayed
+show_milliseconds = true
+
+[direnv]
+disabled = false
+
+[jobs]
+disabled = false
+
+[shell]
+disabled = false
+style = 'bold green'
+format = '[| $indicator]($style) '
+
+
+# bar 1
+[env_var.USER]
+default = 'unkown'
+style = 'bg:bar-1 fg:os-icon'
+format = '[ $env_value]($style)'
+
+[env_var.HOST]
+default = 'unkown'
+style = 'bg:bar-1 fg:os-icon'
+format = '[$env_value]($style)'
+
+
+[os]
+style = "bg:bar-1 fg:os-icon"
+format = "[ $symbol ]($style)"
+disabled = false
+
+[os.symbols]
+nixos = "󰜗"
+
+
+# bar 2
+[directory]
+style = "fg:os-icon bg:bar-2"
+format = "[ $path ]($style)"
+truncation_length = 6
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"documents" = "󰈙 "
+"downloads" = " "
+"music" = " "
+"pictures" = " "
+
+
+# bar 3
+[git_branch]
+symbol = ""
+style = "bg:#394260"
+format = '[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)'
+
+[git_status]
+style = "bg:#394260"
+format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)'
+
+
+# bar 4
+[dotnet]
+style = "bg:bar-4 fg:bar-4-text"
+format = '[ $symbol($version )(🎯 $tfm )]($style)'         #tfm is target framework moniker
+detect_extensions = ['csproj', 'sln', 'fsproj', 'xproj']
+
+[c]
+style = "bg:bar-4 fg:bar-4-text"
+
+[cpp]
+style = "bg:bar-4 fg:bar-4-text"
+
+[conda]
+style = "bg:bar-4 fg:bar-4-text"
+
+[crystal]
+style = "bg:bar-4 fg:bar-4-text"
+
+[python]
+style = "bg:bar-4 fg:bar-4-text"
+
+[nodejs]
+style = "bg:bar-4 fg:bar-4-text"
+
+[odin]
+style = "bg:bar-4 fg:bar-4-text"
+
+[lua]
+style = "bg:bar-4 fg:bar-4-text"
+
+
+# bar 5
+[time]
+disabled = false
+time_format = "%r" # hour:minute format
+style = "bg:bar-5 fg:bar-5-text"
+format = '[  $time ]($style)'
+
+
+# disabled modules
+[aws]
+disabled = true
+[azure]
+disabled = true
+[battery]
+disabled = true
+[buf]
+disabled = true
+[bun]
+disabled = true
+[cmake]
+disabled = true
+[cobol]
+disabled = true
+[daml]
+disabled = true
+[dart]
+disabled = true
+[deno]
+disabled = true
+[elixir]
+disabled = true
+[elm]
+disabled = true
+
+[container]
+disabled = true
+[custom]
+disabled = true
+[docker_context]
+disabled = true
+[erlang]
+disabled = true
+[fennel]
+disabled = true
+[fill]
+disabled = true
+[fortran]
+disabled = true
+[fossil_branch]
+disabled = true
+[fossil_metrics]
+disabled = true
+[gcloud]
+disabled = true
+
+[git_commit]
+disabled = true
+
+[git_metrics]
+disabled = true
+
+[git_state]
+disabled = true
+
+[gleam]
+disabled = true
+[golang]
+disabled = true
+[gradle]
+disabled = true
+[guix_shell]
+disabled = true
+[haskell]
+disabled = true
+[haxe]
+disabled = true
+[helm]
+disabled = true
+[hg_branch]
+disabled = true
+[hg_state]
+disabled = true
+[hostname]
+disabled = true
+[java]
+disabled = true
+[julia]
+disabled = true
+[kotlin]
+disabled = true
+[kubernetes]
+disabled = true
+[line_break]
+disabled = true
+[localip]
+disabled = true
+[maven]
+disabled = true
+[memory_usage]
+disabled = true
+[meson]
+disabled = true
+[mise]
+disabled = true
+[mojo]
+disabled = true
+[nats]
+disabled = true
+[netns]
+disabled = true
+[nim]
+disabled = true
+[ocaml]
+disabled = true
+[opa]
+disabled = true
+[openstack]
+disabled = true
+[package]
+disabled = true
+[perl]
+disabled = true
+[php]
+disabled = true
+[pijul_channel]
+disabled = true
+[pixi]
+disabled = true
+[pulumi]
+disabled = true
+[purescript]
+disabled = true
+[quarto]
+disabled = true
+[raku]
+disabled = true
+[red]
+disabled = true
+[rlang]
+disabled = true
+[ruby]
+disabled = true
+[scala]
+disabled = true
+[shlvl]
+disabled = true
+[singularity]
+disabled = true
+[solidity]
+disabled = true
+[spack]
+disabled = true
+[status]
+disabled = true
+[sudo]
+disabled = true
+[swift]
+disabled = true
+[terraform]
+disabled = true
+[typst]
+disabled = true
+[username]
+disabled = true
+[vagrant]
+disabled = true
+[vcsh]
+disabled = true
+[vlang]
+disabled = true
+[xmake]
+disabled = true
+[zig]
+disabled = true
