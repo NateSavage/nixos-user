@@ -120,6 +120,8 @@ style = "bg:bar-4 fg:bar-4-text"
 
 [lua]
 style = "bg:bar-4 fg:bar-4-text"
+symbol = "lua"
+format = "[ $symbol $version]($style)"
 
 
 # bar 5
