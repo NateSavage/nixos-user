@@ -21,15 +21,20 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+-- import your plugins
+local lazyPackages = {
+  { import = "plugins" },
+}
+
 -- Setup lazy.nvim
-require("lazy").setup({
-  spec = {
-    -- import your plugins
-    { import = "plugins" },
-  },
+require("lazy").setup(lazyPackages, {
   -- Configure any other settings here. See the documentation for more details.
   -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "habamax" } },
   -- automatically check for plugin updates
   checker = { enabled = true },
+  performance = {
+    reset_packpath = false, -- so that plugins outside of lazy (e.g. Nix-installed) can be loaded
+  },
 })
+vim.cmd([[packloadall]]) -- load plugins outside of lazy (e.g. via Nix packpath)
