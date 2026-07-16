@@ -49,7 +49,22 @@ if (isWindows) {
 }
 else {
     var home = $"/home/{username}";
-    Run("sudo", $"find {home} -type l -lname \"/nix/store/*/dotfiles/*\" -delete");
+
+    // tmpfiles `C` rules only copy when the destination is missing, so remove
+    // the managed files first (this also clears any stale symlinks left over
+    // from the old `L` setup), then let systemd-tmpfiles re-seed them from the
+    // Nix store. Only paths present in the repo's dotfiles/ tree are touched;
+    // nested `.git` dirs (e.g. the nvim config's own repo) are left alone.
+    const string dotfiles = "dotfiles";
+    if (Directory.Exists(dotfiles)) {
+        foreach (var file in Directory.EnumerateFiles(dotfiles, "*", SearchOption.AllDirectories)) {
+            var relative = Path.GetRelativePath(dotfiles, file).Replace('\\', '/');
+            if (("/" + relative + "/").Contains("/.git/")) continue;
+            var target = Path.Combine(home, relative);
+            Run("sudo", $"rm -f \"{target}\"");
+        }
+    }
+
     Run("sudo", "systemd-tmpfiles --create");
 }
 

@@ -24,14 +24,17 @@
       else []
     ) entries);
 
-  # d rules ensure parent dirs exist before L rules create symlinks
+  # d rules ensure parent dirs exist before C rules copy files in
   dotfileDirRules = map (relDir:
     "d /home/nates/${relDir} - nates users -"
   ) (listDirsRelative dotfilesDir);
 
-  # One tmpfiles symlink rule per dotfile
+  # One tmpfiles copy rule per dotfile. C copies a real, writable file into
+  # place (editable live, unlike an L symlink into the read-only Nix store),
+  # but only when the destination is absent -- so `dotfiles-load` deletes the
+  # existing copies first to refresh them from the repo.
   dotfileRules = map (relPath:
-    "L /home/nates/${relPath} - nates users - ${dotfilesDir}/${relPath}"
+    "C /home/nates/${relPath} 0644 nates users - ${dotfilesDir}/${relPath}"
   ) (listFilesRelative dotfilesDir);
 in {
 
