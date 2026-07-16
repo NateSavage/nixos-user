@@ -125,7 +125,7 @@ style = "bg:bar-4 fg:bar-4-text"
 # bar 5
 [time]
 disabled = false
-time_format = "%r" # hour:minute format
+time_format = "%R" # hour:minute format
 style = "bg:bar-5 fg:bar-5-text"
 format = '[  $time ]($style)'
 
