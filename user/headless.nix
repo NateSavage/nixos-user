@@ -1,19 +1,22 @@
 { ... }: {
-  # Same as server.nix, plus YubiKey support (SSH resident-key linking,
-  # PAM u2f for login/sudo) - for headless machines you still want the
-  # key working on, e.g. a WSL box.
+  # Same as server.nix. YubiKey support (SSH resident-key linking, PAM u2f)
+  # used to be enabled here for headless/WSL machines, but on this WSL setup
+  # usbip-yubikey-attach.service (modules/wsl-usb.nix, auto-enabled via
+  # wsl.enable - see server.nix) fails to actually attach the key over
+  # USB/IP in practice, which makes modules/yubikey.nix's udev-triggered
+  # linking moot anyway - the device never shows up. Disabled here rather
+  # than removed, in case usbipd-win/WSL's USB/IP support gets more reliable
+  # later:
+  #
+  # yubikey = {
+  #   enable = true;
+  #   user = "nates";
+  #   identifiers = {
+  #     a = 31114443;
+  #     c = 27429156;
+  #   };
+  # };
   imports = [
     ./server.nix
   ];
-
-  yubikey = {
-    enable = true;
-    user = "nates";
-    identifiers = {
-      a = 31114443;
-      c = 27429156;
-    };
-    # lockOnRemove intentionally left at its default (false) - that's meant
-    # for a physical desktop session, not a headless/SSH-only machine.
-  };
 }

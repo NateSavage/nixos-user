@@ -137,7 +137,8 @@ static Dictionary<string, string> GetStorageItems(bool platformIsWindows) {
         return new Dictionary<string, string>() {
             [Path.Combine(home, ".gitconfig")]              = Path.Combine("dotfiles", ".gitconfig"),
             [Path.Combine(home, ".ssh", "config")]          = Path.Combine("dotfiles", ".ssh", "config"),
-            [Path.Combine(home, ".config", "nvim")]         = Path.Combine("dotfiles", ".config", "nvim"),
+            // nvim config lives in its own repo (github:NateSavage/nvim) now,
+            // not mirrored here - see user/software/cli/nvim.nix's activation script.
             [Path.Combine(home, ".config", "yazi")]         = Path.Combine("dotfiles", ".config", "yazi"),
             [Path.Combine(home, ".config", "zed")]          = Path.Combine("dotfiles", ".config", "zed"),
             [Path.Combine(home, ".config", "ion")]          = Path.Combine("dotfiles", ".config", "ion"),
@@ -151,7 +152,8 @@ static Dictionary<string, string> GetStorageItems(bool platformIsWindows) {
         return new Dictionary<string, string>() {
             [Path.Combine(home, ".gitconfig")]              = Path.Combine("dotfiles", ".gitconfig"),
             [Path.Combine(home, ".ssh", "config")]          = Path.Combine("dotfiles", ".ssh", "config"),
-            [Path.Combine(localAppData, "nvim")]            = Path.Combine("dotfiles", ".config", "nvim"),
+            // nvim config lives in its own repo (github:NateSavage/nvim) now,
+            // not mirrored here - clone it directly to %LocalAppData%\nvim.
             [Path.Combine(appData, "yazi", "config")]       = Path.Combine("dotfiles", ".config", "yazi"),
             [Path.Combine(appData, "Zed")]                  = Path.Combine("dotfiles", ".config", "zed"),
             [Path.Combine(home, ".config", "starship.toml")] = Path.Combine("dotfiles", ".config", "starship.toml"),

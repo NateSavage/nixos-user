@@ -7,15 +7,15 @@ using System.Runtime.InteropServices;
 var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 var username = args.Length > 0 ? args[0] : Environment.UserName;
 var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
 if (isWindows) {
     var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
     // Repo source -> app config destination mappings
+    // nvim config lives in its own repo (github:NateSavage/nvim) now, not
+    // mirrored here - clone/pull it directly to %LocalAppData%\nvim.
     var items = new Dictionary<string, string> {
         [Path.Combine("dotfiles", ".config", "zed")]           = Path.Combine(appData, "Zed"),
-        [Path.Combine("dotfiles", ".config", "nvim")]          = Path.Combine(localAppData, "nvim"),
         [Path.Combine("dotfiles", ".config", "yazi")]          = Path.Combine(appData, "yazi", "config"),
         [Path.Combine("dotfiles", ".config", "starship.toml")] = Path.Combine(home, ".config", "starship.toml"),
     };

@@ -47,6 +47,23 @@ dotfiles/.config/foo/bar   → /home/nates/.config/foo/bar
 
 Just drop a file in and rebuild — no Nix changes needed.
 
+## Neovim
+
+Neovim's config, Nix packaging, and NixOS wiring all live in their own
+flake: [github.com/NateSavage/nvim](https://github.com/NateSavage/nvim),
+pulled in here as the `nvim-config` input and turned on with two lines in
+`user/software/cli/nvim.nix`:
+
+```nix
+programs.nates-nvim.enable = true;
+programs.nates-nvim.user = "nates";
+```
+
+Everything else — the overlay, installing the package, cloning the repo to
+`~/.config/nvim` on first rebuild — is handled by that flake's own
+`nixosModules.default`, not by anything here. Lua edits after that are made
+straight in the live checkout, no rebuild required.
+
 ## SSH
 
 Authentication is yubikey-only (password auth disabled by default). Two hardware keys are registered:
