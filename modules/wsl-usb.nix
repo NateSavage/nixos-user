@@ -6,19 +6,32 @@
 #
 # Self-activating: enable defaults to tracking `wsl.enable`, so a WSL
 # machine gets this for free and a non-WSL machine never touches it - no
-# `users.nates.wslUsb.enable = true;` needed anywhere.
+# `users.nates.wslUsb.enable = true;` needed anywhere. This module is
+# imported by user/headless.nix specifically, not user/default.nix - only
+# the headless profile carries it. desktop.nix and a bare server.nix never
+# reference it at all, WSL or not.
 #
-# For that to actually be zero-touch across the whole repo, add this file
-# to the `imports` list in user/default.nix (the base both desktop.nix and
-# server.nix build on), instead of importing it per-machine.
-# Then any consuming flake just needs:
+# That's only safe because every reference to NixOS-WSL's own option
+# (`wsl.usbip.enable`) is gated on `wslPresent` (see the `let` block below),
+# not just on `cfg.enable`. `mkIf cfg.enable` alone is NOT enough: NixOS
+# requires an option to be *declared* wherever it's assigned in `config`,
+# regardless of whether the surrounding mkIf condition ends up true or
+# false. A non-WSL machine never imports nixos-wsl.nixosModules.default, so
+# `wsl.usbip.enable` is never declared there - assigning it unconditionally
+# under `mkIf cfg.enable` previously broke evaluation on every non-WSL
+# desktop/server machine with "The option `wsl.usbip.enable' does not
+# exist", even with wslUsb.enable forced to false. `wslPresent` fixes that
+# by keeping the assignment out of the config tree entirely unless
+# NixOS-WSL's module is actually present - see the `let` block below.
+#
+# Any consuming flake just needs the usual WSL wiring, nothing extra:
 #   imports = [
 #     nixos-wsl.nixosModules.default
-#     nixos-user.nixosModules.server   # or .desktop
+#     nixos-user.nixosModules.headless
 #   ];
 #   wsl.enable = true;
-# ...and this module activates on its own. `vendorId` still defaults to
-# Yubico (1050) but can be overridden per-machine if needed.
+# ...and this module activates on its own from there. `vendorId` still
+# defaults to Yubico (1050) but can be overridden per-machine if needed.
 #
 # Runs itself automatically on first boot of a new WSL machine (gated by
 # a marker file so it only ever runs once, and retries on the next boot
@@ -48,18 +61,28 @@
 
 let
   cfg = config.users.nates.wslUsb;
+
+  # True only when NixOS-WSL's module (which declares wsl.usbip.enable) is
+  # actually part of this evaluation. `?` with a dotted path checks
+  # structurally whether the option exists without forcing its value or
+  # throwing when `wsl` is absent entirely - same reasoning as the
+  # `config.wsl.enable or false` default just below. Everything in `config`
+  # that assigns into NixOS-WSL's own option namespace is gated on this
+  # (not just on cfg.enable), which is what keeps this module safe to
+  # import unconditionally on non-WSL machines.
+  wslPresent = config ? wsl.usbip.enable;
 in
 {
   options.users.nates.wslUsb = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      # Auto-activate on WSL, stay off everywhere else. "or false" matters
-      # here: on a plain desktop/server machine, nixos-wsl's module was
-      # never imported, so the `wsl` option namespace doesn't exist at all -
-      # without the fallback this would hard-crash evaluation instead of
-      # just being false.
-      default = config.wsl.enable or false;
-      defaultText = lib.literalExpression "config.wsl.enable or false";
+      # Auto-activate on WSL, stay off everywhere else. wslPresent matters
+      # as much as `wsl.enable` does here: on a plain desktop/server
+      # machine, nixos-wsl's module was never imported, so the `wsl` option
+      # namespace doesn't exist at all - without both checks this would
+      # hard-crash evaluation instead of just being false.
+      default = wslPresent && (config.wsl.enable or false);
+      defaultText = lib.literalExpression "wslPresent && (config.wsl.enable or false)";
       description = ''
         Whether to enable USB/IP passthrough for a YubiKey on NixOS-WSL.
         Defaults to tracking `wsl.enable`, so this needs no manual toggle
@@ -74,16 +97,11 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable ({
     assertions = [{
-      assertion = config.wsl.enable or false;
-      message = "users.nates.wslUsb.enable is set, but wsl.enable is not - this only works on NixOS-WSL.";
+      assertion = wslPresent && (config.wsl.enable or false);
+      message = "users.nates.wslUsb.enable is set, but wsl.enable is not, or NixOS-WSL's module isn't imported - this only works on NixOS-WSL.";
     }];
-
-    # Base USB/IP client support from NixOS-WSL: installs linuxPackages.usbip,
-    # enables udev. We deliberately don't use its autoAttach list, since that
-    # wants a fixed busid - ours is discovered dynamically below instead.
-    wsl.usbip.enable = true;
 
     # The kernel module that actually makes USB/IP attach possible on the
     # client side. Not guaranteed to auto-load on WSL - this makes sure it
@@ -206,5 +224,10 @@ in
         echo "or run: systemctl start usbip-yubikey-attach.service"
       '';
     };
-  };
+  } // lib.optionalAttrs wslPresent {
+    # Base USB/IP client support from NixOS-WSL: installs linuxPackages.usbip,
+    # enables udev. We deliberately don't use its autoAttach list, since that
+    # wants a fixed busid - ours is discovered dynamically above instead.
+    wsl.usbip.enable = true;
+  });
 }

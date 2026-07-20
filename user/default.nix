@@ -41,7 +41,6 @@ in {
   imports = [
     ../modules/yubikey.nix
     ../modules/smb-mounts.nix
-    ../modules/wsl-usb.nix
   ];
 
   options.users.nates = {
