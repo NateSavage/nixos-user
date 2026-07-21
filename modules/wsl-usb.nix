@@ -1,76 +1,9 @@
 # modules/wsl-usb.nix
-#
-# USB/IP passthrough for a YubiKey (or any single USB device) on NixOS-WSL,
-# matched by vendor ID rather than a fixed bus ID, so it keeps working
-# across different USB ports and different machines.
-#
-# Self-activating: enable defaults to tracking `wsl.enable`, so a WSL
-# machine gets this for free and a non-WSL machine never touches it - no
-# `users.nates.wslUsb.enable = true;` needed anywhere. This module is
-# imported by user/headless.nix specifically, not user/default.nix - only
-# the headless profile carries it. desktop.nix and a bare server.nix never
-# reference it at all, WSL or not.
-#
-# That's only safe because every reference to NixOS-WSL's own option
-# (`wsl.usbip.enable`) is gated on `wslPresent` (see the `let` block below),
-# not just on `cfg.enable`. `mkIf cfg.enable` alone is NOT enough: NixOS
-# requires an option to be *declared* wherever it's assigned in `config`,
-# regardless of whether the surrounding mkIf condition ends up true or
-# false. A non-WSL machine never imports nixos-wsl.nixosModules.default, so
-# `wsl.usbip.enable` is never declared there - assigning it unconditionally
-# under `mkIf cfg.enable` previously broke evaluation on every non-WSL
-# desktop/server machine with "The option `wsl.usbip.enable' does not
-# exist", even with wslUsb.enable forced to false. `wslPresent` fixes that
-# by keeping the assignment out of the config tree entirely unless
-# NixOS-WSL's module is actually present - see the `let` block below.
-#
-# Any consuming flake just needs the usual WSL wiring, nothing extra:
-#   imports = [
-#     nixos-wsl.nixosModules.default
-#     nixos-user.nixosModules.headless
-#   ];
-#   wsl.enable = true;
-# ...and this module activates on its own from there. `vendorId` still
-# defaults to Yubico (1050) but can be overridden per-machine if needed.
-#
-# Runs itself automatically on first boot of a new WSL machine (gated by
-# a marker file so it only ever runs once, and retries on the next boot
-# if it failed - e.g. the key wasn't plugged in yet). Installs usbipd-win
-# on Windows if it's missing, and binds/shares the device. It will prompt
-# for one admin approval on the Windows side. To force it manually
-# (e.g. to retry immediately instead of waiting for a reboot):
-#   systemctl start wsl-usbip-bootstrap.service
-#
-# After that, usbip-yubikey-attach.service (plus its timer) keeps the
-# device attached automatically, including after replug or reboot.
-#
-# This module only owns the USB/IP transport - once attached, the device
-# shows up as a normal USB device and modules/yubikey.nix's existing udev
-# rule (ATTR{idVendor}=="1050") picks it up the same way it would on bare
-# metal. That module isn't auto-enabled here - set it explicitly on
-# whichever machine flake needs it, same as user/desktop.nix already does:
-#   yubikey = {
-#     enable = true;
-#     user = "nates";
-#     identifiers = { a = 31114443; c = 27429156; };
-#   };
-# user/server.nix doesn't turn this on by default, so a WSL machine built
-# on the server module needs that block added explicitly.
-
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, options, ... }:
 
 let
   cfg = config.users.nates.wslUsb;
-
-  # True only when NixOS-WSL's module (which declares wsl.usbip.enable) is
-  # actually part of this evaluation. `?` with a dotted path checks
-  # structurally whether the option exists without forcing its value or
-  # throwing when `wsl` is absent entirely - same reasoning as the
-  # `config.wsl.enable or false` default just below. Everything in `config`
-  # that assigns into NixOS-WSL's own option namespace is gated on this
-  # (not just on cfg.enable), which is what keeps this module safe to
-  # import unconditionally on non-WSL machines.
-  wslPresent = config ? wsl.usbip.enable;
+  wslPresent = options ? wsl.usbip.enable;
 in
 {
   options.users.nates.wslUsb = {
