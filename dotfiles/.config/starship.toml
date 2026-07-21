@@ -63,7 +63,7 @@ format = "[ $symbol ]($style)"
 disabled = false
 
 [os.symbols]
-nixos = "󰜗"
+NixOS = "󰜗"
 
 
 # bar 2
