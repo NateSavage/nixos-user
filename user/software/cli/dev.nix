@@ -5,6 +5,7 @@
     stable.ripgrep
     stable.git
     stable.git-lfs
+    stabe.lazygit
     stable.just
   ];
 }
