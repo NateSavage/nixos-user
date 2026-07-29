@@ -132,11 +132,11 @@
         "nvim-wrappers": "nvim-wrappers"
       },
       "locked": {
-        "lastModified": 1785314757,
-        "narHash": "sha256-YoQI4tfyE02sXGGuxsRcTmIOZeTWzd4qIlwvCboadnE=",
+        "lastModified": 1785317987,
+        "narHash": "sha256-wASN/4/1ZHs5q5y/iubJA3btGFUt3r+F9rTeNWYWN04=",
         "owner": "NateSavage",
         "repo": "nvim",
-        "rev": "fefde0f5b5112eba2e677bf90fa8bad4f971e958",
+        "rev": "a398a857aedefb8bf2eb3f6d9b8278052d41c65c",
         "type": "github"
       },
       "original": {
