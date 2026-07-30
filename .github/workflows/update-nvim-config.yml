@@ -1,0 +1,33 @@
+name: "Update nvim-config flake input"
+
+# Keeps this flake's pin of nvim-config (github:NateSavage/nvim) always tracking the latest commit on its default branch
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # daily at 06:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  update-nvim-config:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Update nvim-config input
+        run: nix flake update nvim-config
+
+      - name: Commit and push if changed
+        run: |
+          if ! git diff --quiet -- flake.lock; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add flake.lock
+            git commit -m "chore: update nvim-config flake input"
+            git push
+          else
+            echo "nvim-config already up to date"
+          fi
