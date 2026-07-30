@@ -7,5 +7,6 @@
     stable.git-lfs
     stable.lazygit
     stable.just
+    unstable.claude-code
   ];
 }
