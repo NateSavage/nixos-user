@@ -1,5 +1,17 @@
 eval $(starship init ion)
 
+# set WSL tab name based on the project name for the current directory
+fn PROMPT
+    let STARSHIP_ION_STATUS = $?
+    let STARSHIP_ION_CMD_DURATION = $or($CMD_DURATION $ION_CMD_DURATION)
+    let STARSHIP_ION_CMD_DURATION = $((STARSHIP_ION_CMD_DURATION * 1000))
+
+    let ROOT = $or($(git rev-parse --show-toplevel ^> /dev/null) $PWD)
+    printf '\033]0;%s\007' $(basename $ROOT)
+
+    starship prompt --status $STARSHIP_ION_STATUS --jobs $(jobs ^| wc -l) --cmd-duration $STARSHIP_ION_CMD_DURATION
+end
+
 alias fd = 'yazi'     # find directory
 alias fw = 'livegrep' # find word
 alias ff = 'fzf'      # find file
